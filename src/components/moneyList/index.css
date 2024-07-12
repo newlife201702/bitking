@@ -1,0 +1,26 @@
+.money-list-container .card-container {
+    padding: 15px;
+    background: #FFFFFF;
+}
+
+.money-list-container .card-container .card {
+    border: 1px solid #F7BA01;
+}
+
+.money-list-container .card-container .card + .card {
+    margin-top: 10px;
+}
+
+.money-list-container .withdraw-container {
+    padding: 10px 15px;
+    background: #FFFFFF;
+    border-radius: 35px;
+}
+
+.money-list-container .withdraw-container .money-container {
+    width: 60%;
+}
+
+.money-list-container .withdraw-container .money-container {
+    width: 60%;
+}
