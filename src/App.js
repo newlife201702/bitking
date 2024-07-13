@@ -10,12 +10,16 @@ import { useTranslation } from 'react-i18next';
 import './i18n'; // 引入i18n配置
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import MoneyList from './components/moneyList/index';
+import Account from './components/account/index';
+import MenuModal from './components/menuModal/index';
 
 function App() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [amt, setAmt] = useState(0);
   const [data, setData] = useState([]);
-  const [cardList, setCardList] = useState([1,2,3]);
+  const [cardList, setCardList] = useState([]);
+  const [menuModalVisible, setMenuModalVisible] = useState(false);
+  const [menuList, setMenuList] = useState([]);
   const config = {
     data,
     height: 300,
@@ -43,23 +47,30 @@ function App() {
     console.log('values', values);
   }
 
-  const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
-  };
-
   const getPerformance = () => {
     axios.post('https://www.bitking.world/h5api/performance', {
-      invite_code: '111'
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      // invite_code: 'O31J27V02'
+      invite_code: '000001'
     })
     .then(function (response) {
       const data = response.data;
       if (data.code === 1) {
-        setCardList(data.data || []);
+        setCardList(data.data?.data_list || []);
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  };
+
+  const getMenu = () => {
+    axios.post('https://www.bitking.world/h5api/menu', {
+      uid: '000001'
+    })
+    .then(function (response) {
+      const data = response.data;
+      if (data.code === 1) {
+        setMenuList(data.data || []);
       }
     })
     .catch(function (error) {
@@ -91,11 +102,13 @@ function App() {
     });
 
     getPerformance();
+    getMenu();
   }, []);
 
   return (
     <div className="App">
-      <MoneyList cardList={cardList} />
+      {/* <MoneyList cardList={cardList} /> */}
+      {/* <Account /> */}
       {/* <div>
         <h1>Wallet Connect with Web3Modal and Wagmi</h1>
         {isConnected ? (
@@ -123,9 +136,12 @@ function App() {
       </div> */}
       <header>
         <Flex justify="space-between" align="center">
-          <Button onClick={() => changeLanguage('en')}>English</Button>
-          <Button onClick={() => changeLanguage('zh')}>中文</Button>
-          <Button color="primary" fill="solid" shape="rounded">{t('menu')}</Button>
+          <Button
+            color="primary"
+            fill="solid"
+            shape="rounded"
+            onClick={() => setMenuModalVisible(true)}
+          >{t('menu')}</Button>
           <Button
             color="primary"
             fill="solid"
@@ -140,69 +156,74 @@ function App() {
                   >
                     <Form.Item
                       name='money'
-                      label='币种'
+                      label={t('currency')}
                       trigger='onConfirm'
                       onClick={(e, pickerRef) => {
                         pickerRef.current?.open();
                       }}
-                      rules={[{ required: true, message: '币种不能为空' }]}
+                      rules={[{ required: true, message: t('currency cannot be empty') }]}
                     >
                       <Picker
                         columns={moneyColumns}
                       >
                         {items =>
-                          items.length > 0 ? items[0].label : '选择币种'
+                          items.length > 0 ? items[0].label : t('select currency')
                         }
                       </Picker>
                     </Form.Item>
                     <Form.Item
                       name='lang'
-                      label='语言'
+                      label={t('language')}
                       trigger='onConfirm'
                       onClick={(e, pickerRef) => {
                         pickerRef.current?.open();
                       }}
-                      rules={[{ required: true, message: '语言不能为空' }]}
+                      rules={[{ required: true, message: t('language cannot be empty') }]}
                     >
                       <Picker
                         columns={langColumns}
                       >
                         {items =>
-                          items.length > 0 ? items[0].label : '选择语言'
+                          items.length > 0 ? items[0].label : t('select language')
                         }
                       </Picker>
                     </Form.Item>
-                    <Form.Item name='amount' label='数量' childElementPosition='right'>
+                    <Form.Item name='amount' label={t('number')} childElementPosition='right'>
                       <Stepper />
                     </Form.Item>
                   </Form>
                 ),
-                confirmText: '支付',
+                confirmText: t('pay'),
+                cancelText: t('cancel'),
                 onConfirm: () => {
                   onSubmit();
                 },
+                showCloseButton: true,
               });
             }}
-          >链接钱包</Button>
+          >{t('link wallet')}</Button>
         </Flex>
       </header>
       <div className="content">
         <img src={img} className="img" alt="img" />
         <div className="chart-container">
-          <div className="title">全网总量：{amt}/433M</div>
+          <div className="title">{t('total network volume')}：{amt}/433M</div>
           <div className="chart">
             <Area {...config} />
           </div>
-          <div className="desc">- 七日产出 -</div>
+          <div className="desc">- {t('7-day output')} -</div>
         </div>
       </div>
       <footer>
         <Flex justify="space-between" align="center">
-          <Button color="primary" fill="solid" shape="rounded">节点</Button>
-          <Button color="primary" fill="solid" shape="rounded">租赁挖矿</Button>
-          <Button color="primary" fill="solid" shape="rounded">质押挖矿</Button>
+          <Button color="primary" fill="solid" shape="rounded">{t('node')}</Button>
+          <Button color="primary" fill="solid" shape="rounded">{t('leasing mining')}</Button>
+          <Button color="primary" fill="solid" shape="rounded">{t('pledge mining')}</Button>
         </Flex>
       </footer>
+      {menuModalVisible ? (
+        <MenuModal menuModalVisible={menuModalVisible} setMenuModalVisible={setMenuModalVisible} menuList={menuList} />
+      ) : null}
     </div>
   );
 }

@@ -1,0 +1,64 @@
+.account-container .info-btn {
+    padding: 7px 8px;
+}
+
+.account-container .info-img {
+    width: 22px;
+}
+
+.account-container .content {
+  margin-top: 20px;
+  padding: 35px 10px;
+  background: #FFFFFF;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.account-container .content .tabs {
+    margin: 0 auto;
+}
+
+.account-container .content .divider {
+    margin-top: 33px;
+}
+
+.account-container .content .detail p {
+    font-size: 24px;
+}
+
+.account-container .content .name {
+    color: #C3C3C3;
+}
+
+.account-container .content .position-detail {
+    padding: 0 50px;
+}
+
+.account-container .content .position-detail p {
+    font-size: 20px;
+}
+
+.account-container .content .btn-container {
+    margin-top: 30px;
+}
+
+.account-container .content .btn-container button {
+    background-color: #E88B00;
+    border-color: #FEDC01;
+}
+
+.account-container .content .info-container {
+    position: absolute;
+    left: 0;
+    bottom: 35px;
+    box-sizing: border-box;
+    padding: 10px 40px;
+    width: 100%;
+    background: #FFFFFF;
+    border-radius: 35px;
+    box-shadow: 0px 4px 15px 0px rgba(0, 0, 0, 0.3);
+}
+
+.account-container .content .info-container p {
+    margin: 0;
+}

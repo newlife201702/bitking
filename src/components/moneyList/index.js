@@ -20,11 +20,11 @@ function MoneyList(props) {
             <Flex justify="space-between" align="center" className="withdraw-container">
                 <Flex justify="space-between" align="center" className="money-container">
                     <div>
-                        <p>总业绩</p>
+                        <p>{t('total performance')}</p>
                         <p>000</p>
                     </div>
                     <div>
-                        <p>总佣金</p>
+                        <p>{t('total commission')}</p>
                         <p>000</p>
                     </div>
                 </Flex>

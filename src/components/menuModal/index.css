@@ -1,0 +1,12 @@
+.menu-modal-container {
+    padding: 45px 30px;
+    background: #FEF2CE;
+    border: 6px solid #FEA60C;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.menu-modal-container .title {
+    position: absolute;
+    top: -20px;
+}

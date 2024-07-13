@@ -3,6 +3,7 @@
 }
 
 .App {
+  position: relative;
   padding: 0 10px;
   height: 100vh;
   background-image: url('./img/home/组\ 355@1x.png');
