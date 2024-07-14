@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Button, Space, CenterPopup } from 'antd-mobile';
-import { CloseOutline } from 'antd-mobile-icons';
 import { useTranslation } from 'react-i18next';
 import '../../i18n'; // 引入i18n配置
 import './index.css';

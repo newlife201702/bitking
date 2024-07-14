@@ -17,6 +17,7 @@ function App() {
   const { t } = useTranslation();
   const [amt, setAmt] = useState(0);
   const [data, setData] = useState([]);
+  const [cardAmt, setCardAmt] = useState({});
   const [cardList, setCardList] = useState([]);
   const [menuModalVisible, setMenuModalVisible] = useState(false);
   const [menuList, setMenuList] = useState([]);
@@ -49,13 +50,18 @@ function App() {
 
   const getPerformance = () => {
     axios.post('https://www.bitking.world/h5api/performance', {
-      // invite_code: 'O31J27V02'
-      invite_code: '000001'
+      invite_code: 'O31B22V02'
     })
     .then(function (response) {
       const data = response.data;
       if (data.code === 1) {
-        setCardList(data.data?.data_list || []);
+        // setCardList(data.data?.data_list || []);
+        setCardAmt(data.data?.amt || {});
+        setCardList([
+          ['3.11', '0x123456789', '500U'],
+          ['3.11', '0x123456789', '500U'],
+          ['3.11', '0x123456789', '500U']
+        ]);
       }
     })
     .catch(function (error) {
@@ -65,7 +71,7 @@ function App() {
 
   const getMenu = () => {
     axios.post('https://www.bitking.world/h5api/menu', {
-      uid: '000001'
+      uid: '000002'
     })
     .then(function (response) {
       const data = response.data;
@@ -107,7 +113,7 @@ function App() {
 
   return (
     <div className="App">
-      {/* <MoneyList cardList={cardList} /> */}
+      <MoneyList cardAmt={cardAmt} cardList={cardList} />
       {/* <Account /> */}
       {/* <div>
         <h1>Wallet Connect with Web3Modal and Wagmi</h1>

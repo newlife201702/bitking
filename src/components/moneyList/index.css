@@ -33,4 +33,10 @@
 
 .money-list-container .withdraw-container .money-container p {
     margin: 0;
+    text-align: center;
+    color: #C3C3C3;
+}
+
+.money-list-container .withdraw-container .money-container p span {
+    color: #FF672B;
 }
