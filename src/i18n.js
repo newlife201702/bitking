@@ -50,6 +50,12 @@ const resources = {
         'inviter': 'inviter',
         'copy link': 'copy link',
         'copy invitation code': 'copy invitation code',
+        'network': 'network',
+        'performance': 'performance',
+        'information': 'information',
+        'organization': 'organization',
+        'invitation code': 'invitation code',
+        'success': 'success',
     }
   },
   zh: {
@@ -99,6 +105,12 @@ const resources = {
         'inviter': '邀请我的人',
         'copy link': '复制链接',
         'copy invitation code': '复制邀请码',
+        'network': '网络',
+        'performance': '业绩',
+        'information': '信息',
+        'organization': '组织',
+        'invitation code': '邀请码',
+        'success': '成功',
     }
   }
 };

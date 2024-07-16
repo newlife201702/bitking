@@ -7,8 +7,9 @@ import InviteCodeModal from '../inviteCodeModal';
 
 function MenuModal(props) {
     const { t } = useTranslation();
-    const { menuModalVisible, setMenuModalVisible, menuList } = props;
+    const { menuModalVisible, setMenuModalVisible } = props;
     const [inviteCodeModalVisible, setInviteCodeModalVisible] = useState(false);
+    const menuList = ['network', 'performance', 'information', 'organization', 'invitation code'];
 
     return (
         <div>
@@ -23,21 +24,19 @@ function MenuModal(props) {
                 }}
             >
                 <div className="menu-modal-container">
-                    <Button color="primary" fill="solid" shape="rounded" className="title">{t('menu')}</Button>
-                    <Space direction='vertical'>
-                        {menuList.map((item, index) => (
-                            index === menuList.length - 1 ? (
-                                <Button color="primary" fill="solid" shape="rounded" onClick={() => setInviteCodeModalVisible(true)}>{t('menu')}</Button>
+                    <Button color="primary" fill="solid" shape="rounded" className="menu-modal-title">{t('menu')}</Button>
+                    <Space direction="vertical" className="menu-modal-content">
+                        {menuList.map((item) => (
+                            item === 'invitation code' ? (
+                                <Button color="primary" fill="solid" shape="rounded" block onClick={() => setInviteCodeModalVisible(true)}>{t(item)}</Button>
                             ) : (
-                                <Button color="primary" fill="solid" shape="rounded">{t('menu')}</Button>
+                                <Button color="primary" fill="solid" shape="rounded" block>{t(item)}</Button>
                             )
                         ))}
                     </Space>
                 </div>
             </CenterPopup>
-            {inviteCodeModalVisible ? (
-                <InviteCodeModal inviteCodeModalVisible={inviteCodeModalVisible} setInviteCodeModalVisible={setInviteCodeModalVisible} />
-            ) : null}
+            <InviteCodeModal inviteCodeModalVisible={inviteCodeModalVisible} setInviteCodeModalVisible={setInviteCodeModalVisible} />
         </div>
     );
 }

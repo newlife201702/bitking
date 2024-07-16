@@ -20,7 +20,6 @@ function App() {
   const [cardAmt, setCardAmt] = useState({});
   const [cardList, setCardList] = useState([]);
   const [menuModalVisible, setMenuModalVisible] = useState(false);
-  const [menuList, setMenuList] = useState([]);
   const config = {
     data,
     height: 300,
@@ -69,21 +68,6 @@ function App() {
     });
   };
 
-  const getMenu = () => {
-    axios.post('https://www.bitking.world/h5api/menu', {
-      uid: '000002'
-    })
-    .then(function (response) {
-      const data = response.data;
-      if (data.code === 1) {
-        setMenuList(data.data || []);
-      }
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-  };
-
   useEffect(() => {
     axios.get('https://www.bitking.world/h5api/unlockdinfo')
     .then(function (response) {
@@ -108,7 +92,6 @@ function App() {
     });
 
     getPerformance();
-    getMenu();
   }, []);
 
   return (
@@ -228,7 +211,7 @@ function App() {
         </Flex>
       </footer>
       {menuModalVisible ? (
-        <MenuModal menuModalVisible={menuModalVisible} setMenuModalVisible={setMenuModalVisible} menuList={menuList} />
+        <MenuModal menuModalVisible={menuModalVisible} setMenuModalVisible={setMenuModalVisible} />
       ) : null}
     </div>
   );

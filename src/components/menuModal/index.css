@@ -3,10 +3,14 @@
     background: #FEF2CE;
     border: 6px solid #FEA60C;
     border-radius: 8px;
-    text-align: center;
 }
 
-.menu-modal-container .title {
+.menu-modal-container .menu-modal-title {
     position: absolute;
     top: -20px;
+    left: 38%;
+}
+
+.menu-modal-container .menu-modal-content {
+    width: 100%;
 }
