@@ -7,8 +7,10 @@
 }
 
 .account-container .content {
+  position: relative;
   margin-top: 20px;
   padding: 35px 10px;
+  height: calc(100vh - 160px);
   background: #FFFFFF;
   border-radius: 8px;
   text-align: center;

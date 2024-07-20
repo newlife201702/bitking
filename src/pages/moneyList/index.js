@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Flex } from "antd";
 import { Card, Button, Toast } from "antd-mobile";
 import "./index.css";
@@ -7,11 +8,34 @@ import axios from "axios";
 
 function MoneyList(props) {
   const { t } = useTranslation();
-  const { cardAmt, cardList } = props;
+  const [cardAmt, setCardAmt] = useState({});
+  const [cardList, setCardList] = useState([]);
+
+  const getPerformance = () => {
+    axios.post('https://www.bitking.world/h5api/performance', {
+      // invite_code: 'O31B22V02'
+      invite_code: '000001'
+    })
+    .then(function (response) {
+      const data = response.data;
+      if (data.code === 1) {
+        // setCardList(data.data?.data_list || []);
+        setCardAmt(data.data?.amt || {});
+        setCardList([
+          ['3.11', '0x123456789', '500U'],
+          ['3.11', '0x123456789', '500U'],
+          ['3.11', '0x123456789', '500U']
+        ]);
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  };
 
   const withdraw = () => {
     axios
-      .post("https://www.bitking.world/h5api//withdrawb", {
+      .post("https://www.bitking.world/h5api/withdrawb", {
         uid: "fe3aa57CB7309c3",
         address: "0xbacfe3aa57CB7309c301D99eE6fF8FaA8118d659",
         amt: 1,
@@ -26,6 +50,10 @@ function MoneyList(props) {
         console.log(error);
       });
   };
+
+  useEffect(() => {
+    getPerformance();
+  }, []);
 
   return (
     <div className="money-list-container">

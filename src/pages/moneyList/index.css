@@ -4,7 +4,9 @@
 
 .money-list-container .card-container {
     padding: 15px;
+    height: calc(100vh - 130px);
     background: #FFFFFF;
+    overflow-y: scroll;
 }
 
 .money-list-container .card-container .card {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ConfigProvider, Flex, Radio } from 'antd';
 import { Button, Space, Divider } from 'antd-mobile';
 import { useTranslation } from 'react-i18next';
@@ -8,11 +8,15 @@ import giftImg from '../../img/account/gift@1x.png';
 import shareImg from '../../img/account/share@1x.png';
 import infoImg from '../../img/account/info@1x.png';
 import './index.css';
+import axios from "axios";
+import MenuModal from '../menuModal';
 
 function Account(props) {
     const { t, i18n } = useTranslation();
     const [lang, setLang] = useState('zh');
     const [value, setValue] = useState('a');
+    const [accountInfo, setAccountInfo] = useState({});
+    const [menuModalVisible, setMenuModalVisible] = useState(false);
 
     const changeLanguage = (lng) => {
         setLang(lng);
@@ -22,6 +26,25 @@ function Account(props) {
     const onChange = (e) => {
         setValue(e.target.value);
     };
+
+    const getAccountinfo = () => {
+      axios.post('https://www.bitking.world/h5api/accountinfo', {
+        uid: 'fe3aa57CB7309c3'
+      })
+      .then(function (response) {
+        const data = response.data;
+        // if (data.code === 1) {
+            setAccountInfo(data.data?.[0] || {});
+        // }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    };
+
+    useEffect(() => {
+        getAccountinfo();
+    }, []);
 
     return (
         <ConfigProvider
@@ -39,7 +62,7 @@ function Account(props) {
             <div className="account-container">
                 <header>
                     <Flex justify="space-between" align="center">
-                        <Button color="primary" fill="solid" shape="rounded">{t('menu')}</Button>
+                        <Button color="primary" fill="solid" shape="rounded" onClick={() => setMenuModalVisible(true)}>{t('menu')}</Button>
                         <Space>
                             <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage(lang === 'zh' ? 'en' : 'zh')}>
                                 <img src={langImg} alt="img" />
@@ -68,15 +91,15 @@ function Account(props) {
                             <Flex justify="space-between" align="center" className="detail">
                                 <div>
                                     <p className="name">{t('total performance')}</p>
-                                    <p>000</p>
+                                    <p>{accountInfo?.GoldenAccount?.mkt?.[0] ?? '-'}</p>
                                 </div>
                                 <div>
                                     <p className="name">{t('my client')}</p>
-                                    <p>000</p>
+                                    <p>{accountInfo?.GoldenAccount?.mkt?.[1] ?? '-'}</p>
                                 </div>
                                 <div>
                                     <p className="name">{t('customer commission')}</p>
-                                    <p>000</p>
+                                    <p>{accountInfo?.GoldenAccount?.mkt?.[2] ?? '-'}</p>
                                 </div>
                             </Flex>
                             <Divider className="divider" />
@@ -84,15 +107,15 @@ function Account(props) {
                             <Flex justify="space-between" align="center" className="detail">
                                 <div>
                                     <p className="name">{t('total acquisition')}</p>
-                                    <p>000</p>
+                                    <p>{accountInfo?.GoldenAccount?.point?.[0] ?? '-'}</p>
                                 </div>
                                 <div>
                                     <p className="name">{t('unlocked')}</p>
-                                    <p>000</p>
+                                    <p>{accountInfo?.GoldenAccount?.point?.[1] ?? '-'}</p>
                                 </div>
                                 <div>
                                     <p className="name">{t('repurchased')}</p>
-                                    <p>000</p>
+                                    <p>{accountInfo?.GoldenAccount?.point?.[2] ?? '-'}</p>
                                 </div>
                             </Flex>
                             <Flex justify="space-between" align="center" className="btn-container">
@@ -106,39 +129,39 @@ function Account(props) {
                             <Flex justify="space-between" align="center" className="detail">
                                 <div>
                                     <p className="name">{t('mining')}</p>
-                                    <p>000</p>
+                                    <p>{accountInfo?.web3account?.BTK?.[0] ?? '-'}</p>
                                 </div>
                                 <div>
                                     <p className="name">{t('buy')}</p>
-                                    <p>000</p>
+                                    <p>{accountInfo?.web3account?.BTK?.[1] ?? '-'}</p>
                                 </div>
                                 <div>
                                     <p className="name">{t('airdrop')}</p>
-                                    <p>000</p>
+                                    <p>{accountInfo?.web3account?.BTK?.[2] ?? '-'}</p>
                                 </div>
                             </Flex>
                             <Flex justify="space-between" align="center" className="detail">
                                 <div>
                                     <p className="name">{t('total excavation')}</p>
-                                    <p>000</p>
+                                    <p>{accountInfo?.web3account?.BTK?.[3] ?? '-'}</p>
                                 </div>
                                 <div>
                                     <p className="name">{t('unlocked')}</p>
-                                    <p>000</p>
+                                    <p>{accountInfo?.web3account?.BTK?.[4] ?? '-'}</p>
                                 </div>
                                 <div>
                                     <p className="name">{t('to be unlocked')}</p>
-                                    <p>000</p>
+                                    <p>{accountInfo?.web3account?.BTK?.[5] ?? '-'}</p>
                                 </div>
                             </Flex>
                             <Flex justify="space-between" align="center" className="position-detail">
                                 <div>
                                     <p>{t('current position')}</p>
-                                    <p>50000</p>
+                                    <p>{accountInfo?.web3account?.BTK?.[6] ?? '-'}</p>
                                 </div>
                                 <div>
                                     <p>{t('position ratio')}</p>
-                                    <p>80%</p>
+                                    <p>{accountInfo?.web3account?.BTK?.[7] ?? '-'}%</p>
                                 </div>
                             </Flex>
                             <Flex justify="space-between" align="center" className="btn-container">
@@ -154,14 +177,17 @@ function Account(props) {
                         </div>
                         <div>
                             <p className="name">{t('ranking')}</p>
-                            <p>3000/3000</p>
+                            <p>{accountInfo?.account?.ranking}/3000</p>
                         </div>
                         <div>
                             <p className="name">{t('position')}</p>
-                            <p>{t('voter')}</p>
+                            <p>{accountInfo?.account?.position ? t(accountInfo.account.position) : '-'}</p>
                         </div>
                     </Flex>
                 </div>
+                {menuModalVisible ? (
+                    <MenuModal menuModalVisible={menuModalVisible} setMenuModalVisible={setMenuModalVisible} />
+                ) : null}
             </div>
         </ConfigProvider>
     );
