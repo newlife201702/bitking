@@ -1,25 +1,30 @@
 import { useEffect, useState } from 'react';
 import { ConfigProvider, Flex, Radio } from 'antd';
-import { Button, Space, Divider } from 'antd-mobile';
+import { Button, Space, Divider, Popover } from 'antd-mobile';
 import { useTranslation } from 'react-i18next';
 import '../../i18n'; // 引入i18n配置
 import langImg from '../../img/account/lang@1x.png';
 import giftImg from '../../img/account/gift@1x.png';
 import shareImg from '../../img/account/share@1x.png';
 import infoImg from '../../img/account/info@1x.png';
+import jianImg from '../../img/account/简@1x.png';
+import fanImg from '../../img/account/繁@1x.png';
+import enImg from '../../img/account/EN@1x.png';
+import jpImg from '../../img/account/JP@1x.png';
+import krImg from '../../img/account/KR@1x.png';
 import './index.css';
 import axios from "axios";
 import MenuModal from '../menuModal';
+import { useAuth } from '../../AuthContext';
 
 function Account(props) {
+    const { auth } = useAuth();
     const { t, i18n } = useTranslation();
-    const [lang, setLang] = useState('zh');
     const [value, setValue] = useState('a');
     const [accountInfo, setAccountInfo] = useState({});
     const [menuModalVisible, setMenuModalVisible] = useState(false);
 
     const changeLanguage = (lng) => {
-        setLang(lng);
         i18n.changeLanguage(lng);
     };
 
@@ -29,13 +34,13 @@ function Account(props) {
 
     const getAccountinfo = () => {
       axios.post('https://www.bitking.world/h5api/accountinfo', {
-        uid: 'fe3aa57CB7309c3'
+        uid: auth.uid
       })
       .then(function (response) {
         const data = response.data;
-        // if (data.code === 1) {
+        if (data.code === 1) {
             setAccountInfo(data.data?.[0] || {});
-        // }
+        }
       })
       .catch(function (error) {
         console.log(error);
@@ -64,9 +69,33 @@ function Account(props) {
                     <Flex justify="space-between" align="center">
                         <Button color="primary" fill="solid" shape="rounded" onClick={() => setMenuModalVisible(true)}>{t('menu')}</Button>
                         <Space>
-                            <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage(lang === 'zh' ? 'en' : 'zh')}>
-                                <img src={langImg} alt="img" />
-                            </Button>
+                            <Popover
+                                content={
+                                    <Space direction="vertical">
+                                        <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage('zh2')}>
+                                            <img src={jianImg} alt="img" />
+                                        </Button>
+                                        <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage('zh1')}>
+                                            <img src={fanImg} alt="img" />
+                                        </Button>
+                                        <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage('en')}>
+                                            <img src={enImg} alt="img" />
+                                        </Button>
+                                        <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage('jp')}>
+                                            <img src={jpImg} alt="img" />
+                                        </Button>
+                                        <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage('kr')}>
+                                            <img src={krImg} alt="img" />
+                                        </Button>
+                                    </Space>
+                                }
+                                trigger="click"
+                                placement="bottom"
+                            >
+                                <Button color="primary" fill="solid" shape="rounded">
+                                    <img src={langImg} alt="img" />
+                                </Button>
+                            </Popover>
                             <Button color="primary" fill="solid" shape="rounded">
                                 <img src={giftImg} alt="img" />
                             </Button>
@@ -173,7 +202,7 @@ function Account(props) {
                     <Flex justify="space-between" align="center" className="info-container">
                         <div>
                             <p className="name">{t('account number')}</p>
-                            <p>0x123123</p>
+                            <p>{auth.uid}</p>
                         </div>
                         <div>
                             <p className="name">{t('ranking')}</p>

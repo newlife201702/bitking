@@ -1,55 +1,15 @@
-import { useEffect, useState } from "react";
 import { Flex } from "antd";
 import { Button, Popup, Toast } from "antd-mobile";
 import { useTranslation } from "react-i18next";
 import "../../i18n"; // 引入i18n配置
 import "./index.css";
-import axios from "axios";
 import clipboard from "copy-text-to-clipboard";
+import { useAuth } from '../../AuthContext';
 
 function InviteCode(props) {
+  const { auth } = useAuth();
   const { t } = useTranslation();
   const { inviteCodeModalVisible, setInviteCodeModalVisible } = props;
-  const [inviteCode, setInviteCode] = useState("");
-  const [superCode, setSuperCode] = useState("");
-  const [invitelink, setInvitelink] = useState("");
-
-  const getInviteCodeAndSuperCode = () => {
-    axios
-      .post("https://www.bitking.world/h5api/fillfathercode", {
-        uid: "0x123AB456",
-        father_code: "0x12345678",
-      })
-      .then(function (response) {
-        const data = response.data;
-        if (data.code === 1) {
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  };
-
-  const getInvitelink = () => {
-    axios
-      .post("https://www.bitking.world/h5api/invitelink", {
-        uid: "0x123AB456",
-        address: "0xc678ujfr567uijgty7890plkjhu8o",
-      })
-      .then(function (response) {
-        const data = response.data;
-        if (data.code === 1) {
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  };
-
-  useEffect(() => {
-    getInviteCodeAndSuperCode();
-    getInvitelink();
-  }, []);
 
   return (
     <Popup
@@ -66,10 +26,15 @@ function InviteCode(props) {
       }}
     >
       <h2>{t("my invitation code")}</h2>
-      <h3>{t("inviter")}：XXX</h3>
+      <h3 className="grey-color">{t("inviter")}：{auth.father_code || '-'}</h3>
+      <Flex justify="space-between" align="center" className="code-container blue-color">
+        {(auth.super_code || auth.invite_code).replaceAll(" ","").split('').map(item => (
+          <div className="code-number">{item}</div>
+        ))}
+      </Flex>
       <div className="invite-link">
-        <p>文本文本文本文本文本文本文本文本文本文本</p>
-        <a>https://www.xxxxx.xxxx/code=A12B34C56</a>
+        <p className="grey-color">{auth.uid} 邀请您加入世界囤金计划～</p>
+        <p className="blue-color">{`http://www.bitking.world/code=${(auth.super_code || auth.invite_code).replaceAll(" ","")}`}</p>
       </div>
       <Flex justify="space-between" align="center" className="btn-container">
         <Button
@@ -77,7 +42,7 @@ function InviteCode(props) {
           fill="solid"
           shape="rounded"
           onClick={() => {
-            clipboard("111");
+            clipboard(`http://www.bitking.world/code=${(auth.super_code || auth.invite_code).replaceAll(" ","")}`);
             Toast.show({
               content: t("copy link") + t("success"),
             });
@@ -90,7 +55,7 @@ function InviteCode(props) {
           fill="solid"
           shape="rounded"
           onClick={() => {
-            clipboard("222");
+            clipboard((auth.super_code || auth.invite_code).replaceAll(" ",""));
             Toast.show({
               content: t("copy invitation code") + t("success"),
             });

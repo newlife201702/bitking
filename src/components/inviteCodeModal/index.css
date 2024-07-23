@@ -8,3 +8,20 @@
     margin-top: 18px;
     padding: 0 26px;
 }
+
+.grey-color {
+    color: #939393;
+}
+
+.blue-color {
+    color: #0069E9;
+}
+
+.code-container {
+    margin: 20px auto;
+    width: 50%;
+}
+
+.code-container .code-number {
+    border-bottom: 1px solid #0069E9;
+}

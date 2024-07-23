@@ -28,7 +28,13 @@ function MenuModal(props) {
                     <Button color="primary" fill="solid" shape="rounded" className="menu-modal-title">{t('menu')}</Button>
                     <Space direction="vertical" className="menu-modal-content">
                         {menuList.map((item) => {
-                            if (item === 'performance') {
+                            if (item === 'network') {
+                                return (
+                                    <Link to="/">
+                                        <Button color="primary" fill="solid" shape="rounded" block onClick={() => setMenuModalVisible(false)}>{t(item)}</Button>
+                                    </Link>
+                                );
+                            } else if (item === 'performance') {
                                 return (
                                     <Link to="/moneylist">
                                         <Button color="primary" fill="solid" shape="rounded" block onClick={() => setMenuModalVisible(false)}>{t(item)}</Button>

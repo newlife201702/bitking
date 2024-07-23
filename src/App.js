@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Flex } from 'antd';
-import { Button, Modal, Form, Picker, Stepper, Swiper } from 'antd-mobile';
+import { Button, Modal, Form, Picker, Stepper, Swiper, Toast } from 'antd-mobile';
 import { Area } from '@ant-design/plots';
 import axios from 'axios';
 import confirmImg from './img/home/confirm_img.png';
@@ -15,16 +15,20 @@ import { sendTransaction } from '@wagmi/core';
 import { parseEther } from 'viem';
 import { config } from './config';
 import { connect } from '@wagmi/core';
-import { injected } from '@wagmi/connectors';
+import { walletConnect } from '@wagmi/connectors';
+import { useAuth } from './AuthContext';
 
 function App() {
   const location = useLocation();
   const currentPath = location.pathname;
+  const { auth, setAuth } = useAuth();
   const { t } = useTranslation();
   const [amt, setAmt] = useState(0);
   const [data, setData] = useState([]);
   const [menuModalVisible, setMenuModalVisible] = useState(false);
   const [imgs, setImgs] = useState([]);
+  const [productsInfo, setProductsInfo] = useState([]);
+  const [currentPayProduct, setCurrentProduct] = useState({});
   const chartConfig = {
     data,
     height: 300,
@@ -36,25 +40,48 @@ function App() {
   };
   const [form] = Form.useForm();
   const moneyColumns = [[
-    { label: '人民币', value: '人民币' },
-    { label: '美元', value: '美元' },
+    { label: 'USDT', value: 'USDT' },
   ]];
-  const langColumns = [[
-    { label: '中文', value: '中文' },
-    { label: '英文', value: '英文' },
+  const networkColumns = [[
+    { label: 'BSC', value: 'BSC' },
   ]];
+  const productsInfoName = {
+    '普通节点': 'ordinary node',
+    '购买挖矿': 'purchase mining',
+    '租赁挖矿': 'leasing mining'
+  };
 
   const onSubmit = async () => {
     const values = form.getFieldsValue();
-    console.log('values', values);
-    return;
-    const result0 = await connect(config, { connector: injected() });
-    console.log('result0', result0);
-    const result = await sendTransaction(config, {
-      to: '0xd2135CfB216b74109775236E36d4b433F1DF507B',
-      value: parseEther(values.amount + ''),
-    });
-    console.log('result', result);
+    try {
+      const result = await sendTransaction(config, {
+        account: auth.account,
+        to: '0xd2135CfB216b74109775236E36d4b433F1DF507B',
+        value: parseEther(values.amount + ''),
+      });
+      axios.post('https://www.bitking.world/h5api/payconfirm', {
+        uid: auth.uid,
+        chain_name: values.network[0],
+        coin_type: values.money[0],
+        txshash: result,
+        category: currentPayProduct.cn,
+        amt: values.amount * currentPayProduct.price,
+        intivatecode: auth.super_code || auth.intivate_code
+      })
+      .then(function (response) {
+        const data = response.data;
+        if (data.code === 1) {
+          Toast.show({
+            content: t("success"),
+          });
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getImgs = () => {
@@ -94,16 +121,115 @@ function App() {
     });
   };
 
+  const getProductsinfo = () => {
+    axios.get('https://www.bitking.world/h5api/productsinfo')
+    .then(function (response) {
+      const data = response.data;
+      if (data.code === 1) {
+        setProductsInfo(data.data?.map(item => ({
+          ...item,
+          cn: item.name,
+          name: productsInfoName[item.name]
+        })));
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  };
+
+  const walletConnectFunc = async () => {
+    const connectResult = await connect(config, { connector: walletConnect({ projectId: '3f16e56c7257930aca7d6bc52640c2f8'}) });
+    axios.post('https://www.bitking.world/h5api/register_login', {
+      address: connectResult.accounts[0],
+      amt: '-1'
+    })
+    .then(function (response) {
+      const data = response.data;
+      if (data.code === 1) {
+        setAuth({
+          ...data.data[0],
+          account: connectResult.accounts[0]
+        });
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  };
+
+  const showPayModal = (product) => {
+    setCurrentProduct(product);
+    Modal.confirm({
+      image: confirmImg,
+      content: (
+        <Form
+          form={form}
+          layout='horizontal'
+          initialValues={{
+            money: ['USDT'],
+            network: ['BSC'],
+          }}
+        >
+          <Form.Item
+            name='money'
+            label={t('currency')}
+            trigger='onConfirm'
+            onClick={(e, pickerRef) => {
+              pickerRef.current?.open();
+            }}
+            rules={[{ required: true, message: t('currency cannot be empty') }]}
+          >
+            <Picker
+              columns={moneyColumns}
+            >
+              {items =>
+                items.length > 0 ? items[0].label : t('select currency')
+              }
+            </Picker>
+          </Form.Item>
+          <Form.Item
+            name='network'
+            label={t('network')}
+            trigger='onConfirm'
+            onClick={(e, pickerRef) => {
+              pickerRef.current?.open();
+            }}
+            rules={[{ required: true, message: t('network cannot be empty') }]}
+          >
+            <Picker
+              columns={networkColumns}
+            >
+              {items =>
+                items.length > 0 ? items[0].label : t('select network')
+              }
+            </Picker>
+          </Form.Item>
+          <Form.Item name='amount' label={t('number')} childElementPosition='right'>
+            <Stepper />
+          </Form.Item>
+        </Form>
+      ),
+      confirmText: t('pay'),
+      cancelText: t('cancel'),
+      onConfirm: () => {
+        onSubmit();
+      },
+      showCloseButton: true,
+    });
+  };
+
   useEffect(() => {
     getImgs();
     getUnlockdinfo();
+    getProductsinfo();
   }, []);
 
   const items = imgs.map((img, index) => (
     <Swiper.Item key={index}>
       <img src={img} className="img" alt="img" />
     </Swiper.Item>
-  ))
+  ));
 
   return (
     <div className="App">
@@ -121,59 +247,7 @@ function App() {
               fill="solid"
               shape="rounded"
               onClick={() => {
-                Modal.confirm({
-                  image: confirmImg,
-                  content: (
-                    <Form
-                      form={form}
-                      layout='horizontal'
-                    >
-                      <Form.Item
-                        name='money'
-                        label={t('currency')}
-                        trigger='onConfirm'
-                        onClick={(e, pickerRef) => {
-                          pickerRef.current?.open();
-                        }}
-                        rules={[{ required: true, message: t('currency cannot be empty') }]}
-                      >
-                        <Picker
-                          columns={moneyColumns}
-                        >
-                          {items =>
-                            items.length > 0 ? items[0].label : t('select currency')
-                          }
-                        </Picker>
-                      </Form.Item>
-                      <Form.Item
-                        name='lang'
-                        label={t('language')}
-                        trigger='onConfirm'
-                        onClick={(e, pickerRef) => {
-                          pickerRef.current?.open();
-                        }}
-                        rules={[{ required: true, message: t('language cannot be empty') }]}
-                      >
-                        <Picker
-                          columns={langColumns}
-                        >
-                          {items =>
-                            items.length > 0 ? items[0].label : t('select language')
-                          }
-                        </Picker>
-                      </Form.Item>
-                      <Form.Item name='amount' label={t('number')} childElementPosition='right'>
-                        <Stepper />
-                      </Form.Item>
-                    </Form>
-                  ),
-                  confirmText: t('pay'),
-                  cancelText: t('cancel'),
-                  onConfirm: () => {
-                    onSubmit();
-                  },
-                  showCloseButton: true,
-                });
+                walletConnectFunc();
               }}
             >{t('link wallet')}</Button>
           </Flex>
@@ -194,9 +268,9 @@ function App() {
             </div>
             <footer>
               <Flex justify="space-between" align="center">
-                <Button color="primary" fill="solid" shape="rounded">{t('node')}</Button>
-                <Button color="primary" fill="solid" shape="rounded">{t('leasing mining')}</Button>
-                <Button color="primary" fill="solid" shape="rounded">{t('pledge mining')}</Button>
+                {productsInfo.map(item => (
+                  <Button color="primary" fill="solid" shape="rounded" onClick={() => showPayModal(item)}>{t(item.name)}</Button>
+                ))}
               </Flex>
             </footer>
           </div>

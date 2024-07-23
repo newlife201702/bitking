@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Flex } from "antd";
-import { Card, Button, Toast } from "antd-mobile";
+import { Card, Button, Toast, Modal, Form, Stepper } from "antd-mobile";
 import "./index.css";
 import { useTranslation } from "react-i18next";
 import "../../i18n"; // 引入i18n配置
 import axios from "axios";
+import { useAuth } from '../../AuthContext';
 
 function MoneyList(props) {
+  const { auth } = useAuth();
   const { t } = useTranslation();
   const [cardAmt, setCardAmt] = useState({});
   const [cardList, setCardList] = useState([]);
+  const [form] = Form.useForm();
 
   const getPerformance = () => {
     axios.post('https://www.bitking.world/h5api/performance', {
@@ -33,11 +36,34 @@ function MoneyList(props) {
     });
   };
 
+  const showWithdrawModal = () => {
+    Modal.confirm({
+      title: t('withdraw reward'),
+      content: (
+        <Form
+          form={form}
+          layout='horizontal'
+        >
+          <Form.Item name='amount' label={t('USDT')} childElementPosition='right'>
+            <Stepper />
+          </Form.Item>
+          <p>{t('balance')}：0</p>
+        </Form>
+      ),
+      confirmText: t('withdraw'),
+      cancelText: t('cancel'),
+      onConfirm: () => {
+        withdraw();
+      },
+      showCloseButton: true,
+    });
+  };
+
   const withdraw = () => {
     axios
       .post("https://www.bitking.world/h5api/withdrawb", {
-        uid: "fe3aa57CB7309c3",
-        address: "0xbacfe3aa57CB7309c301D99eE6fF8FaA8118d659",
+        uid: auth.uid,
+        address: auth.account,
         amt: 1,
       })
       .then(function (response) {
@@ -96,7 +122,7 @@ function MoneyList(props) {
           fill="solid"
           shape="rounded"
           className="withdraw"
-          onClick={withdraw}
+          onClick={showWithdrawModal}
         >
           {t("withdraw")}
         </Button>
