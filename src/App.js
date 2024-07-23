@@ -37,6 +37,7 @@ function App() {
     colorField: 'type',
     shapeField: 'smooth',
     stack: true, // Try to remove this line.
+    scale: { color: { palette: "set3" } },
   };
   const [form] = Form.useForm();
   const moneyColumns = [[
@@ -139,23 +140,27 @@ function App() {
   };
 
   const walletConnectFunc = async () => {
-    const connectResult = await connect(config, { connector: walletConnect({ projectId: '3f16e56c7257930aca7d6bc52640c2f8'}) });
-    axios.post('https://www.bitking.world/h5api/register_login', {
-      address: connectResult.accounts[0],
-      amt: '-1'
-    })
-    .then(function (response) {
-      const data = response.data;
-      if (data.code === 1) {
-        setAuth({
-          ...data.data[0],
-          account: connectResult.accounts[0]
-        });
-      }
-    })
-    .catch(function (error) {
+    try {
+      const connectResult = await connect(config, { connector: walletConnect({ projectId: '3f16e56c7257930aca7d6bc52640c2f8'}) });
+      axios.post('https://www.bitking.world/h5api/register_login', {
+        address: connectResult.accounts[0],
+        amt: '-1'
+      })
+      .then(function (response) {
+        const data = response.data;
+        if (data.code === 1) {
+          setAuth({
+            ...data.data[0],
+            account: connectResult.accounts[0]
+          });
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    } catch (error) {
       console.log(error);
-    });
+    }
   };
 
   const showPayModal = (product) => {
@@ -240,7 +245,7 @@ function App() {
               color="primary"
               fill="solid"
               shape="rounded"
-              onClick={() => setMenuModalVisible(true)}
+              onClick={() => auth.uid && setMenuModalVisible(true)}
             >{t('menu')}</Button>
             <Button
               color="primary"
@@ -269,7 +274,7 @@ function App() {
             <footer>
               <Flex justify="space-between" align="center">
                 {productsInfo.map(item => (
-                  <Button color="primary" fill="solid" shape="rounded" onClick={() => showPayModal(item)}>{t(item.name)}</Button>
+                  <Button color="primary" fill="solid" shape="rounded" onClick={() => auth.uid && showPayModal(item)}>{t(item.name)}</Button>
                 ))}
               </Flex>
             </footer>
