@@ -16,19 +16,13 @@ function MoneyList(props) {
 
   const getPerformance = () => {
     axios.post('https://www.bitking.world/h5api/performance', {
-      // invite_code: 'O31B22V02'
-      invite_code: '000001'
+      invite_code: auth.super_code || auth.invite_code
     })
     .then(function (response) {
       const data = response.data;
       if (data.code === 1) {
-        // setCardList(data.data?.data_list || []);
+        setCardList(data.data?.data_list || []);
         setCardAmt(data.data?.amt || {});
-        setCardList([
-          ['3.11', '0x123456789', '500U'],
-          ['3.11', '0x123456789', '500U'],
-          ['3.11', '0x123456789', '500U']
-        ]);
       }
     })
     .catch(function (error) {
@@ -47,7 +41,6 @@ function MoneyList(props) {
           <Form.Item name='amount' label={t('USDT')} childElementPosition='right'>
             <Stepper />
           </Form.Item>
-          <p>{t('balance')}：0</p>
         </Form>
       ),
       confirmText: t('withdraw'),
@@ -60,11 +53,12 @@ function MoneyList(props) {
   };
 
   const withdraw = () => {
+    const values = form.getFieldsValue();
     axios
       .post("https://www.bitking.world/h5api/withdrawb", {
         uid: auth.uid,
         address: auth.account,
-        amt: 1,
+        amt: values.amount,
       })
       .then(function (response) {
         const data = response.data;

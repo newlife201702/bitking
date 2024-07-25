@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Flex } from 'antd';
 import { Button, Modal, Form, Picker, Stepper, Swiper, Toast } from 'antd-mobile';
 import { Area } from '@ant-design/plots';
@@ -28,7 +28,7 @@ function App() {
   const [menuModalVisible, setMenuModalVisible] = useState(false);
   const [imgs, setImgs] = useState([]);
   const [productsInfo, setProductsInfo] = useState([]);
-  const [currentPayProduct, setCurrentProduct] = useState({});
+  const currentPayProduct = useRef({});
   const chartConfig = {
     data,
     height: 300,
@@ -58,16 +58,16 @@ function App() {
       const result = await sendTransaction(config, {
         account: auth.account,
         to: '0xd2135CfB216b74109775236E36d4b433F1DF507B',
-        value: parseEther(values.amount + ''),
+        value: parseEther((values.amount * currentPayProduct.current.price) + ''),
       });
       axios.post('https://www.bitking.world/h5api/payconfirm', {
         uid: auth.uid,
         chain_name: values.network[0],
         coin_type: values.money[0],
         txshash: result,
-        category: currentPayProduct.cn,
-        amt: values.amount * currentPayProduct.price,
-        intivatecode: auth.super_code || auth.intivate_code
+        category: currentPayProduct.current.cn,
+        amt: values.amount * currentPayProduct.current.price,
+        intivatecode: auth.super_code || auth.invite_code
       })
       .then(function (response) {
         const data = response.data;
@@ -164,7 +164,7 @@ function App() {
   };
 
   const showPayModal = (product) => {
-    setCurrentProduct(product);
+    currentPayProduct.current = product;
     Modal.confirm({
       image: confirmImg,
       content: (
