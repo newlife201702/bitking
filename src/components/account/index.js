@@ -1,17 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ConfigProvider, Flex, Radio } from 'antd';
-import { Button, Space, Divider, Popover } from 'antd-mobile';
+import { Button, Divider } from 'antd-mobile';
 import { useTranslation } from 'react-i18next';
 import '../../i18n'; // 引入i18n配置
-import langImg from '../../img/account/lang@1x.png';
-import giftImg from '../../img/account/gift@1x.png';
-import shareImg from '../../img/account/share@1x.png';
-import infoImg from '../../img/account/info@1x.png';
-import jianImg from '../../img/account/简@1x.png';
-import fanImg from '../../img/account/繁@1x.png';
-import enImg from '../../img/account/EN@1x.png';
-import jpImg from '../../img/account/JP@1x.png';
-import krImg from '../../img/account/KR@1x.png';
 import './index.css';
 import axios from "axios";
 import MenuModal from '../menuModal';
@@ -19,14 +10,10 @@ import { useAuth } from '../../AuthContext';
 
 function Account(props) {
     const { auth } = useAuth();
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const [value, setValue] = useState('a');
     const [accountInfo, setAccountInfo] = useState({});
     const [menuModalVisible, setMenuModalVisible] = useState(false);
-
-    const changeLanguage = (lng) => {
-        i18n.changeLanguage(lng);
-    };
 
     const onChange = (e) => {
         setValue(e.target.value);
@@ -65,49 +52,6 @@ function Account(props) {
             }}
         >
             <div className="account-container">
-                <header>
-                    <Flex justify="space-between" align="center">
-                        <Button color="primary" fill="solid" shape="rounded" onClick={() => setMenuModalVisible(true)}>{t('menu')}</Button>
-                        <Space>
-                            <Popover
-                                content={
-                                    <Space direction="vertical">
-                                        <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage('zh2')}>
-                                            <img src={jianImg} alt="img" />
-                                        </Button>
-                                        <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage('zh1')}>
-                                            <img src={fanImg} alt="img" />
-                                        </Button>
-                                        <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage('en')}>
-                                            <img src={enImg} alt="img" />
-                                        </Button>
-                                        <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage('jp')}>
-                                            <img src={jpImg} alt="img" />
-                                        </Button>
-                                        <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage('kr')}>
-                                            <img src={krImg} alt="img" />
-                                        </Button>
-                                    </Space>
-                                }
-                                trigger="click"
-                                placement="bottom"
-                            >
-                                <Button color="primary" fill="solid" shape="rounded">
-                                    <img src={langImg} alt="img" />
-                                </Button>
-                            </Popover>
-                            <Button color="primary" fill="solid" shape="rounded">
-                                <img src={giftImg} alt="img" />
-                            </Button>
-                            <Button color="primary" fill="solid" shape="rounded">
-                                <img src={shareImg} alt="img" />
-                            </Button>
-                            <Button color="primary" fill="solid" shape="rounded" className="info-btn">
-                                <img src={infoImg} className="info-img" alt="img" />
-                            </Button>
-                        </Space>
-                    </Flex>
-                </header>
                 <div className="content">
                     <Radio.Group onChange={onChange} value={value} buttonStyle="solid">
                         <Radio.Button value="a">{t('platform account')}</Radio.Button>

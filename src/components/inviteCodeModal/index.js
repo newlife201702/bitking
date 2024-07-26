@@ -34,7 +34,7 @@ function InviteCode(props) {
       </Flex>
       <div className="invite-link">
         <p className="grey-color">{auth.uid} 邀请您加入世界囤金计划～</p>
-        <p className="blue-color">{`http://www.bitking.world/code=${(auth.super_code || auth.invite_code).replaceAll(" ","")}`}</p>
+        <p className="blue-color">{`http://www.bitking.world/code=${(auth.super_code || auth.invite_code)}`}</p>
       </div>
       <Flex justify="space-between" align="center" className="btn-container">
         <Button
@@ -42,7 +42,7 @@ function InviteCode(props) {
           fill="solid"
           shape="rounded"
           onClick={() => {
-            clipboard(`http://www.bitking.world/code=${(auth.super_code || auth.invite_code).replaceAll(" ","")}`);
+            clipboard(`http://www.bitking.world/code=${(auth.super_code || auth.invite_code)}`);
             Toast.show({
               content: t("copy link") + t("success"),
             });
@@ -55,7 +55,7 @@ function InviteCode(props) {
           fill="solid"
           shape="rounded"
           onClick={() => {
-            clipboard((auth.super_code || auth.invite_code).replaceAll(" ",""));
+            clipboard((auth.super_code || auth.invite_code));
             Toast.show({
               content: t("copy invitation code") + t("success"),
             });

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Flex } from 'antd';
-import { Button, Modal, Form, Picker, Stepper, Swiper, Toast } from 'antd-mobile';
+import { Button, Modal, Form, Picker, Stepper, Swiper, Toast, Space, Popover } from 'antd-mobile';
 import { Area } from '@ant-design/plots';
 import axios from 'axios';
 import confirmImg from './img/home/confirm_img.png';
@@ -17,12 +17,21 @@ import { config } from './config';
 import { connect } from '@wagmi/core';
 import { walletConnect } from '@wagmi/connectors';
 import { useAuth } from './AuthContext';
+import langImg from './img/account/lang@1x.png';
+import giftImg from './img/account/gift@1x.png';
+import shareImg from './img/account/share@1x.png';
+import infoImg from './img/account/info@1x.png';
+import jianImg from './img/account/简@1x.png';
+import fanImg from './img/account/繁@1x.png';
+import enImg from './img/account/EN@1x.png';
+import jpImg from './img/account/JP@1x.png';
+import krImg from './img/account/KR@1x.png';
 
 function App() {
   const location = useLocation();
   const currentPath = location.pathname;
   const { auth, setAuth } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [amt, setAmt] = useState(0);
   const [data, setData] = useState([]);
   const [menuModalVisible, setMenuModalVisible] = useState(false);
@@ -38,6 +47,9 @@ function App() {
     shapeField: 'smooth',
     stack: true, // Try to remove this line.
     scale: { color: { palette: "set3" } },
+    axis: {
+      y: { labelFormatter: '~s' },
+    },
   };
   const [form] = Form.useForm();
   const moneyColumns = [[
@@ -57,7 +69,7 @@ function App() {
     try {
       const result = await sendTransaction(config, {
         account: auth.account,
-        to: '0xd2135CfB216b74109775236E36d4b433F1DF507B',
+        to: '0x6a6d0aB853EDe3F8C9cCcfF297ef773c965d9C4f',
         value: parseEther((values.amount * currentPayProduct.current.price) + ''),
       });
       axios.post('https://www.bitking.world/h5api/payconfirm', {
@@ -224,6 +236,10 @@ function App() {
     });
   };
 
+  const changeLanguage = (lng) => {
+      i18n.changeLanguage(lng);
+  };
+
   useEffect(() => {
     getImgs();
     getUnlockdinfo();
@@ -238,15 +254,54 @@ function App() {
 
   return (
     <div className="App">
-      {currentPath !== '/account' && (
-        <header>
-          <Flex justify="space-between" align="center">
-            <Button
-              color="primary"
-              fill="solid"
-              shape="rounded"
-              onClick={() => auth.uid && setMenuModalVisible(true)}
-            >{t('menu')}</Button>
+      <header>
+        <Flex justify="space-between" align="center">
+          <Button
+            color="primary"
+            fill="solid"
+            shape="rounded"
+            onClick={() => auth.uid && setMenuModalVisible(true)}
+          >{t('menu')}</Button>
+          {auth.uid ? (
+            <Space>
+              <Popover
+                content={
+                  <Space direction="vertical">
+                    <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage('zh2')}>
+                      <img src={jianImg} alt="img" />
+                    </Button>
+                    <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage('zh1')}>
+                      <img src={fanImg} alt="img" />
+                    </Button>
+                    <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage('en')}>
+                      <img src={enImg} alt="img" />
+                    </Button>
+                    <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage('jp')}>
+                      <img src={jpImg} alt="img" />
+                    </Button>
+                    <Button color="primary" fill="solid" shape="rounded" onClick={() => changeLanguage('kr')}>
+                      <img src={krImg} alt="img" />
+                    </Button>
+                  </Space>
+                }
+                trigger="click"
+                placement="bottom"
+              >
+                <Button color="primary" fill="solid" shape="rounded">
+                  <img src={langImg} alt="img" />
+                </Button>
+              </Popover>
+              <Button color="primary" fill="solid" shape="rounded">
+                <img src={giftImg} alt="img" />
+              </Button>
+              <Button color="primary" fill="solid" shape="rounded">
+                <img src={shareImg} alt="img" />
+              </Button>
+              <Button color="primary" fill="solid" shape="rounded" className="info-btn">
+                <img src={infoImg} className="info-img" alt="img" />
+              </Button>
+            </Space>
+          ) : (
             <Button
               color="primary"
               fill="solid"
@@ -255,9 +310,9 @@ function App() {
                 walletConnectFunc();
               }}
             >{t('link wallet')}</Button>
-          </Flex>
-        </header>
-      )}
+          )}
+        </Flex>
+      </header>
       <div>
         {currentPath === '/' && (
           <div>
