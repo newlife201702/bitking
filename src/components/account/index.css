@@ -16,8 +16,8 @@
   text-align: center;
 }
 
-.account-container .content .tabs {
-    margin: 0 auto;
+.account-container .content .ant-radio-button-wrapper {
+    width: 90px;
 }
 
 .account-container .content .divider {
@@ -41,7 +41,7 @@
 }
 
 .account-container .content .btn-container {
-    margin-top: 30px;
+    margin-top: 70px;
 }
 
 .account-container .content .btn-container button {

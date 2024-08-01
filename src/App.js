@@ -14,18 +14,20 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import { sendTransaction } from '@wagmi/core';
 import { parseEther } from 'viem';
 import { config } from './config';
-import { connect } from '@wagmi/core';
+import { connect, disconnect } from '@wagmi/core';
 import { walletConnect } from '@wagmi/connectors';
 import { useAuth } from './AuthContext';
 import langImg from './img/account/lang@1x.png';
 import giftImg from './img/account/gift@1x.png';
 import shareImg from './img/account/share@1x.png';
 import infoImg from './img/account/info@1x.png';
+import disconnectImg from './img/account/disconnect@1x.png';
 import jianImg from './img/account/简@1x.png';
 import fanImg from './img/account/繁@1x.png';
 import enImg from './img/account/EN@1x.png';
 import jpImg from './img/account/JP@1x.png';
 import krImg from './img/account/KR@1x.png';
+import { Link } from 'react-router-dom';
 
 function App() {
   const location = useLocation();
@@ -175,6 +177,14 @@ function App() {
     }
   };
 
+  const walletDisconnectFunc = async () => {
+    await disconnect(config);
+    setAuth({
+      ...auth,
+      uid: ''
+    });
+  };
+
   const showPayModal = (product) => {
     currentPayProduct.current = product;
     Modal.confirm({
@@ -187,6 +197,7 @@ function App() {
             money: ['USDT'],
             network: ['BSC'],
           }}
+          preserve={false}
         >
           <Form.Item
             name='money'
@@ -264,6 +275,20 @@ function App() {
           >{t('menu')}</Button>
           {auth.uid ? (
             <Space>
+              <Button color="primary" fill="solid" shape="rounded">
+                <img src={giftImg} alt="img" />
+              </Button>
+              <Button color="primary" fill="solid" shape="rounded">
+                <img src={shareImg} alt="img" />
+              </Button>
+              <Link to="/account">
+                <Button color="primary" fill="solid" shape="rounded" className="info-btn">
+                  <img src={infoImg} className="info-img" alt="img" />
+                </Button>
+              </Link>
+              <Button color="primary" fill="solid" shape="rounded" className="info-btn" onClick={walletDisconnectFunc}>
+                <img src={disconnectImg} className="info-img" alt="img" />
+              </Button>
               <Popover
                 content={
                   <Space direction="vertical">
@@ -291,15 +316,6 @@ function App() {
                   <img src={langImg} alt="img" />
                 </Button>
               </Popover>
-              <Button color="primary" fill="solid" shape="rounded">
-                <img src={giftImg} alt="img" />
-              </Button>
-              <Button color="primary" fill="solid" shape="rounded">
-                <img src={shareImg} alt="img" />
-              </Button>
-              <Button color="primary" fill="solid" shape="rounded" className="info-btn">
-                <img src={infoImg} className="info-img" alt="img" />
-              </Button>
             </Space>
           ) : (
             <Button
@@ -317,7 +333,7 @@ function App() {
         {currentPath === '/' && (
           <div>
             <div className="content">
-              <Swiper>{items}</Swiper>
+              <Swiper loop autoplay>{items}</Swiper>
               <div className="chart-container">
                 <div className="title">{t('total network volume')}：{amt}/433M</div>
                 <div className="chart">

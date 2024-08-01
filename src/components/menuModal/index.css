@@ -8,7 +8,17 @@
 .menu-modal-container .menu-modal-title {
     position: absolute;
     top: -20px;
-    left: 38%;
+    left: 32%;
+    width: 100px;
+    pointer-events: none; /* 阻止所有点击事件 */
+}
+
+.menu-modal-container .menu-modal-title:active,
+.menu-modal-container .menu-modal-title:focus,
+.menu-modal-container .menu-modal-title:hover {
+  background: none; /* 去掉背景颜色变化 */
+  box-shadow: none; /* 去掉阴影变化 */
+  border: none; /* 去掉边框变化 */
 }
 
 .menu-modal-container .menu-modal-content {
