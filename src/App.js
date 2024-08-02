@@ -28,6 +28,8 @@ import enImg from './img/account/EN@1x.png';
 import jpImg from './img/account/JP@1x.png';
 import krImg from './img/account/KR@1x.png';
 import { Link } from 'react-router-dom';
+import { useWeb3Modal } from '@web3modal/wagmi/react';
+import { useDisconnect, useAccount, useSendTransaction } from 'wagmi';
 
 function App() {
   const location = useLocation();
@@ -65,35 +67,49 @@ function App() {
     '购买挖矿': 'purchase mining',
     '租赁挖矿': 'leasing mining'
   };
+  const { open } = useWeb3Modal();
+  const { disconnect } = useDisconnect();
+  const { address } = useAccount();
+  const { sendTransaction } = useSendTransaction();
 
   const onSubmit = async () => {
     const values = form.getFieldsValue();
     try {
-      const result = await sendTransaction(config, {
-        account: auth.account,
+      // const result = await sendTransaction(config, {
+      //   account: auth.account,
+      //   to: '0x6a6d0aB853EDe3F8C9cCcfF297ef773c965d9C4f',
+      //   value: parseEther((values.amount * currentPayProduct.current.price) + ''),
+      // });
+      sendTransaction({
         to: '0x6a6d0aB853EDe3F8C9cCcfF297ef773c965d9C4f',
         value: parseEther((values.amount * currentPayProduct.current.price) + ''),
+      }, (data) => {
+        // axios.post('https://www.bitking.world/h5api/payconfirm', {
+        //   uid: auth.uid,
+        //   chain_name: values.network[0],
+        //   coin_type: values.money[0],
+        //   txshash: result,
+        //   category: currentPayProduct.current.cn,
+        //   amt: values.amount * currentPayProduct.current.price,
+        //   intivatecode: auth.super_code || auth.invite_code
+        // })
+        // .then(function (response) {
+        //   const data = response.data;
+        //   if (data.code === 1) {
+        //     Toast.show({
+        //       content: t("success"),
+        //     });
+        //   }
+        // })
+        // .catch(function (error) {
+        //   console.log(error);
+        // });
+      }, () => {
+        console.log('onError');
+      }, () => {
+        console.log('onSettled');
       });
-      axios.post('https://www.bitking.world/h5api/payconfirm', {
-        uid: auth.uid,
-        chain_name: values.network[0],
-        coin_type: values.money[0],
-        txshash: result,
-        category: currentPayProduct.current.cn,
-        amt: values.amount * currentPayProduct.current.price,
-        intivatecode: auth.super_code || auth.invite_code
-      })
-      .then(function (response) {
-        const data = response.data;
-        if (data.code === 1) {
-          Toast.show({
-            content: t("success"),
-          });
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+      
     } catch (error) {
       console.log(error);
     }
@@ -153,9 +169,9 @@ function App() {
     });
   };
 
-  const walletConnectFunc = async () => {
+  const walletConnectFunc = async (connectResult) => {
     try {
-      const connectResult = await connect(config, { connector: walletConnect({ projectId: '3f16e56c7257930aca7d6bc52640c2f8'}) });
+      // const connectResult = await connect(config, { connector: walletConnect({ projectId: '3f16e56c7257930aca7d6bc52640c2f8'}) });
       axios.post('https://www.bitking.world/h5api/register_login', {
         address: connectResult.accounts[0],
         amt: '-1'
@@ -178,7 +194,8 @@ function App() {
   };
 
   const walletDisconnectFunc = async () => {
-    await disconnect(config);
+    // await disconnect(config);
+    disconnect();
     setAuth({
       ...auth,
       uid: ''
@@ -257,6 +274,14 @@ function App() {
     getProductsinfo();
   }, []);
 
+  useEffect(() => {
+    if (address) {
+      walletConnectFunc({
+        accounts: [address]
+      });
+    }
+  }, [address]);
+
   const items = imgs.map((img, index) => (
     <Swiper.Item key={index}>
       <img src={img} className="img" alt="img" />
@@ -323,7 +348,8 @@ function App() {
               fill="solid"
               shape="rounded"
               onClick={() => {
-                walletConnectFunc();
+                // walletConnectFunc();
+                open();
               }}
             >{t('link wallet')}</Button>
           )}
