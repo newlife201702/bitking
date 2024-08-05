@@ -138,8 +138,8 @@ function Account(props) {
                                 </div>
                             </Flex>
                             <Flex justify="space-between" align="center" className="btn-container">
-                                <Button color="primary" fill="solid" shape="rounded">{t('transfer to web3')}</Button>
-                                <Button color="primary" fill="solid" shape="rounded">{t('apply for repurchase')}</Button>
+                                <Button color="primary" fill="solid" shape="rounded">{t('buy')}</Button>
+                                <Button color="primary" fill="solid" shape="rounded">{t('sell out')}</Button>
                             </Flex>
                         </div>
                     )}
@@ -150,7 +150,7 @@ function Account(props) {
                         </div>
                         <div>
                             <p className="name">{t('ranking')}</p>
-                            <p>{accountInfo?.account?.ranking}/3000</p>
+                            <p>{accountInfo?.account?.ranking?.[0]}/{accountInfo?.account?.ranking?.[1]}</p>
                         </div>
                         <div>
                             <p className="name">{t('position')}</p>

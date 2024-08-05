@@ -11,11 +11,11 @@ import Account from './components/account/index';
 import MenuModal from './components/menuModal/index';
 import MoneyList from './pages/moneyList/index';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { sendTransaction } from '@wagmi/core';
+// import { sendTransaction } from '@wagmi/core';
 import { parseEther } from 'viem';
 import { config } from './config';
-import { connect, disconnect } from '@wagmi/core';
-import { walletConnect } from '@wagmi/connectors';
+// import { connect, disconnect } from '@wagmi/core';
+// import { walletConnect } from '@wagmi/connectors';
 import { useAuth } from './AuthContext';
 import langImg from './img/account/lang@1x.png';
 import giftImg from './img/account/gift@1x.png';
@@ -50,7 +50,9 @@ function App() {
     colorField: 'type',
     shapeField: 'smooth',
     stack: true, // Try to remove this line.
-    scale: { color: { palette: "set3" } },
+    scale: {
+      color: { range: ['#FAC858', '#91CC75'] },
+    },
     axis: {
       y: { labelFormatter: '~s' },
     },
@@ -217,23 +219,6 @@ function App() {
           preserve={false}
         >
           <Form.Item
-            name='money'
-            label={t('currency')}
-            trigger='onConfirm'
-            onClick={(e, pickerRef) => {
-              pickerRef.current?.open();
-            }}
-            rules={[{ required: true, message: t('currency cannot be empty') }]}
-          >
-            <Picker
-              columns={moneyColumns}
-            >
-              {items =>
-                items.length > 0 ? items[0].label : t('select currency')
-              }
-            </Picker>
-          </Form.Item>
-          <Form.Item
             name='network'
             label={t('network')}
             trigger='onConfirm'
@@ -247,6 +232,23 @@ function App() {
             >
               {items =>
                 items.length > 0 ? items[0].label : t('select network')
+              }
+            </Picker>
+          </Form.Item>
+          <Form.Item
+            name='money'
+            label={t('currency')}
+            trigger='onConfirm'
+            onClick={(e, pickerRef) => {
+              pickerRef.current?.open();
+            }}
+            rules={[{ required: true, message: t('currency cannot be empty') }]}
+          >
+            <Picker
+              columns={moneyColumns}
+            >
+              {items =>
+                items.length > 0 ? items[0].label : t('select currency')
               }
             </Picker>
           </Form.Item>

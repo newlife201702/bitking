@@ -42,3 +42,7 @@
 .money-list-container .withdraw-container .money-container p span {
     color: #FF672B;
 }
+
+.money-list-container .withdraw-container button {
+    width: 90px;
+}
